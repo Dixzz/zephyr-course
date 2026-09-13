@@ -1,10 +1,5 @@
 
 / {
-
-    aliases {
-        led0 = &myled0;
-    };
-
     leds {
         compatible = "gpio-leds";
 
