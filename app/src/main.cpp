@@ -1,3 +1,4 @@
+#include "zephyr/devicetree.h"
 #include "zephyr/sleep.h"
 #include "zephyr/sys/printk.h"
 #include <zephyr/drivers/gpio.h>
@@ -8,6 +9,10 @@
 
 /* The devicetree node identifier for the "led0" alias. */
 #define LED_NODE DT_ALIAS(app_led)
+
+#if !DT_NODE_HAS_STATUS(LED_NODE, okay)
+#error "Missing `app_led` alias in devicetree"
+#endif
 
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED_NODE, gpios);
 
