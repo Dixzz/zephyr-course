@@ -24,7 +24,7 @@ int main(void)
         if (gpio_pin_toggle_dt(&led) < 0) return 0;
 
         led_state = !led_state;
-        printk("LED state: %s", led_state ? "ON" : "OFF");
+        printk("LED state: %s\n", led_state ? "ON" : "OFF");
         // k_msleep(SLEEP_TIME_MS);
         k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
     }
