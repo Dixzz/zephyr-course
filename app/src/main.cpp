@@ -1,3 +1,4 @@
+#include "zephyr/devicetree.h"
 #include "zephyr/sleep.h"
 #include "zephyr/sys/printk.h"
 #include <zephyr/drivers/gpio.h>
@@ -8,6 +9,10 @@
 
 /* The devicetree node identifier for the "led0" alias. */
 #define LED_NODE DT_ALIAS(app_led)
+
+#if !DT_NODE_HAS_STATUS(LED_NODE, okay)
+#error "Missing `app_led` alias in devicetree"
+#endif
 
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED_NODE, gpios);
 
@@ -24,7 +29,7 @@ int main(void)
         if (gpio_pin_toggle_dt(&led) < 0) return 0;
 
         led_state = !led_state;
-        printk("LED state: %s", led_state ? "ON" : "OFF");
+        printk("LED state: %s\n", led_state ? "ON" : "OFF");
         // k_msleep(SLEEP_TIME_MS);
         k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
     }

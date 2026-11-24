@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-find_package(Zephyr REQUIRED)
+set(EXTRA_DTC_OVERLAY_FILE ${CMAKE_CURRENT_SOURCE_DIR}/app.overlay)
+
+list(APPEND BOARD_ROOT ${CMAKE_CURRENT_SOURCE_DIR})
+
+find_package(Zephyr REQUIRED HINTS $ENV{ZEPHYR_BASE})
 project(my_zephyr_app)
 
 target_sources(app PRIVATE src/main.cpp)
