@@ -5,6 +5,7 @@
 #include <zephyr/drivers/gpio.h>
 #include <zephyr/kernel.h>
 #include <zephyr/logging/log.h>
+#include "trfx_mau.h"
 
 #define SLEEP_TIME_MS 1000
 
@@ -44,12 +45,14 @@ int main(void)
 		// on
 		if (!led_state && sensor_sample_fetch(dev) == 0) {
 			gpio_pin_set_dt(&led, 1);
+			trfx_mau_set_counter(dev, 100);
 		}
 
 		// off
 		if (led_state &&
 		    sensor_channel_get(dev, SENSOR_CHAN_GAUGE_STATE_OF_HEALTH, &sv) == 0) {
 			gpio_pin_set_dt(&led, 0);
+			trfx_mau_set_counter(dev, 200);
 		}
 		// if (gpio_pin_toggle_dt(&led) < 0) {
 		// 	return 0;
