@@ -42,3 +42,4 @@ endmenu
 endmenu
 
 source "Kconfig.zephyr"
+rsource "drivers/trfx/mau/Kconfig"

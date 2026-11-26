@@ -1,4 +1,5 @@
-#include "zephyr/devicetree.h"
+#include "zephyr/device.h"
+#include "zephyr/drivers/sensor.h"
 #include "zephyr/sleep.h"
 #include "zephyr/sys/printk.h"
 #include <zephyr/drivers/gpio.h>
@@ -15,23 +16,49 @@
 #endif
 
 static const struct gpio_dt_spec led = GPIO_DT_SPEC_GET(LED_NODE, gpios);
+const struct device *dev = DEVICE_DT_GET_ANY(mau);
+struct sensor_value sv = {
+	.val1 = 1,
+	.val2 = 2,
+};
 
 LOG_MODULE_REGISTER(main, LOG_LEVEL_INF);
 int main(void)
 {
-    bool led_state = true;
+	bool led_state = true;
 
-    if (!gpio_is_ready_dt(&led)) return 0;
+	if (!gpio_is_ready_dt(&led)) {
+		return 0;
+	}
 
-    if (gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE) < 0) return 0;
+	if (gpio_pin_configure_dt(&led, GPIO_OUTPUT_ACTIVE) < 0) {
+		return 0;
+	}
 
-    while (1) {
-        if (gpio_pin_toggle_dt(&led) < 0) return 0;
+	if (!(device_is_ready(dev))) {
+		return 0;
+	}
 
-        led_state = !led_state;
-        printk("LED state: %s\n", led_state ? "ON" : "OFF");
-        // k_msleep(SLEEP_TIME_MS);
-        k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
-    }
-    return 0;
+	while (1) {
+
+		// on
+		if (!led_state && sensor_sample_fetch(dev) == 0) {
+			gpio_pin_set_dt(&led, 1);
+		}
+
+		// off
+		if (led_state &&
+		    sensor_channel_get(dev, SENSOR_CHAN_GAUGE_STATE_OF_HEALTH, &sv) == 0) {
+			gpio_pin_set_dt(&led, 0);
+		}
+		// if (gpio_pin_toggle_dt(&led) < 0) {
+		// 	return 0;
+		// }
+
+		led_state = !led_state;
+		printk("LED state: %s\n", led_state ? "ON" : "OFF");
+		// k_msleep(SLEEP_TIME_MS);
+		k_msleep(CONFIG_APP_HEARTBEAT_PERIOD_MS);
+	}
+	return 0;
 }

@@ -1,0 +1,2 @@
+config MAU_CUSTOM_DRIVED
+    bool "enable"

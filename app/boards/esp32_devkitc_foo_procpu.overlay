@@ -7,4 +7,9 @@
             gpios = <&gpio0 2 GPIO_ACTIVE_LOW>;
         };
     };
+
+    mau0: mau {
+        compatible = "mau";
+        status = "okay";
+    };
 };
